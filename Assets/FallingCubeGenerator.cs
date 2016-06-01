@@ -13,6 +13,7 @@ public class FallingCubeGenerator : MonoBehaviour {
 	private float curr_height;
    private bool collided;
    private bool good_next_cube;
+   private Vector3 cube_size;
 
 	// Use this for initialization
 	void Start() {
@@ -22,12 +23,12 @@ public class FallingCubeGenerator : MonoBehaviour {
 		curr_height = 1.05f;
       move_by = 0.1f;
       good_next_cube = true;
+      cube_size = new Vector3(3, 1, 3);
 
 		cube = NewCube();
 		Rigidbody rb = cube.AddComponent<Rigidbody>();
 		curr_height += 1f;
 		cube = NewCube();
-
 	}
 
    void OnCollide(GameObject old, GameObject cube) {
@@ -42,12 +43,15 @@ public class FallingCubeGenerator : MonoBehaviour {
       var diffz = Mathf.Abs(pos1.z - pos2.z);
 
       if (diffx > 0.1 || diffz > 0.1) {
-         Destroy(old);
+         cube_size.x -= diffx;
+         cube_size.z -= diffz;
+
+         /*Destroy(old);
          GameObject new_cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
          new_cube.transform.position = pos1;
          new_cube.transform.localScale = new Vector3(3-diffx, 1, 3-diffz);
          Rigidbody rb = new_cube.AddComponent<Rigidbody>();
-         Destroy(rb, 1);
+         Destroy(rb, 1);*/
       }
    }
 
@@ -80,7 +84,6 @@ public class FallingCubeGenerator : MonoBehaviour {
                OnCollide(prevCube, cube); //Debug.Log("test");
             collided = true;
          };
-
 		}
 
 		if (cam_left_to_move > 0) {
@@ -101,7 +104,8 @@ public class FallingCubeGenerator : MonoBehaviour {
       rend.material.SetColor("_Color", color);//Color.blue);
 
 		cube.transform.position = new Vector3(0, curr_height, 0);
-		cube.transform.localScale = new Vector3(3, 1, 3);
+		cube.transform.localScale = cube_size;
+      //cube.transform.localScale = new Vector3(3, 1, 3);
 		return cube;
 	}
 
